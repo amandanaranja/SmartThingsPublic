@@ -25,8 +25,9 @@ data class Weather(val icon: String = "", val high: String = "", val low: String
 data class Dinner(val line: String = "", val tomorrow: String = "")
 
 object SampleDay {
+    private val json = Json { ignoreUnknownKeys = true }
     fun load(context: Context): DayContent {
         val text = context.assets.open("sample_day.json").bufferedReader().use { it.readText() }
-        return Json { ignoreUnknownKeys = true }.decodeFromString(text)
+        return json.decodeFromString(text)
     }
 }

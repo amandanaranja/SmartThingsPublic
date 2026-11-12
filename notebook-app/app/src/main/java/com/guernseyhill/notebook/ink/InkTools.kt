@@ -1,14 +1,18 @@
 package com.guernseyhill.notebook.ink
 
 import androidx.ink.brush.Brush
+import androidx.ink.brush.BrushBehavior
 import androidx.ink.brush.BrushFamily
+import androidx.ink.brush.BrushTip
+import androidx.ink.brush.EasingFunction
+import androidx.ink.brush.ExperimentalInkCustomBrushApi
 import androidx.ink.brush.InputToolType
 import androidx.ink.brush.StockBrushes
 import androidx.ink.strokes.MutableStrokeInputBatch
 import androidx.ink.strokes.Stroke
 import com.guernseyhill.notebook.model.StrokeModel
 
-enum class Tool { PEN, MARKER, HIGHLIGHTER, ERASER, HAND }
+enum class Tool { PEN, BRUSH, MARKER, HIGHLIGHTER, ERASER, HAND }
 
 object Palette {
     data class Ink(val name: String, val argb: Int)
@@ -26,27 +30,55 @@ object Palette {
     )
 }
 
+@OptIn(ExperimentalInkCustomBrushApi::class)
 object Brushes {
     const val PEN = "pen"
+    const val BRUSH = "brush"
     const val MARKER = "marker"
     const val HIGHLIGHTER = "highlighter"
 
     private val sizesDp = mapOf(
-        PEN to floatArrayOf(1.6f, 2.6f, 4.2f),
+        PEN to floatArrayOf(1.8f, 2.8f, 4.4f),
+        BRUSH to floatArrayOf(2.6f, 4.2f, 6.5f),
         MARKER to floatArrayOf(4f, 7f, 11f),
         HIGHLIGHTER to floatArrayOf(12f, 18f, 26f),
     )
 
+    /** Width follows pressure: light touch gives lo × size, full press gives hi × size. */
+    private fun pressure(lo: Float, hi: Float) = BrushBehavior(
+        source = BrushBehavior.Source.NORMALIZED_PRESSURE,
+        target = BrushBehavior.Target.SIZE_MULTIPLIER,
+        sourceValueRangeStart = 0f,
+        sourceValueRangeEnd = 1f,
+        targetModifierRangeStart = lo,
+        targetModifierRangeEnd = hi,
+        sourceOutOfRangeBehavior = BrushBehavior.OutOfRange.CLAMP,
+        responseCurve = EasingFunction.Predefined.EASE_IN_OUT,
+        responseTimeMillis = 25L,
+    )
+
+    /** A fountain-pen feel: a clear difference between light and firm, without going wild. */
+    private val penFamily: BrushFamily = BrushFamily(
+        BrushTip(behaviors = listOf(pressure(0.45f, 1.45f), StockBrushes.predictionFadeOutBehavior)),
+    )
+
+    /** A brush pen: hairline when you barely touch, fat when you lean in. */
+    private val brushFamily: BrushFamily = BrushFamily(
+        BrushTip(behaviors = listOf(pressure(0.12f, 2.1f), StockBrushes.predictionFadeOutBehavior)),
+    )
+
     fun nameFor(tool: Tool): String = when (tool) {
+        Tool.BRUSH -> BRUSH
         Tool.MARKER -> MARKER
         Tool.HIGHLIGHTER -> HIGHLIGHTER
         else -> PEN
     }
 
     fun family(name: String): BrushFamily = when (name) {
+        BRUSH -> brushFamily
         MARKER -> StockBrushes.markerLatest
         HIGHLIGHTER -> StockBrushes.highlighterLatest
-        else -> StockBrushes.pressurePenLatest
+        else -> penFamily
     }
 
     fun sizePx(name: String, idx: Int, density: Float): Float =

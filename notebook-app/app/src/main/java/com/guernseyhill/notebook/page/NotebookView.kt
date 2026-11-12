@@ -61,6 +61,17 @@ class NotebookView(context: Context) : FrameLayout(context) {
     var layoutMode: Boolean = false
         set(v) { field = v; contentLayer.layoutMode = v; stickers.deselect(); notifyState() }
 
+    /** What the pen is reporting, for the meter in the top bar. */
+    var penSeen: Boolean = false
+        private set
+    var lastPressure: Float = 0f
+        private set
+    var pressureMin: Float = 1f
+        private set
+    var pressureMax: Float = 0f
+        private set
+    private var lastMeterAt = 0L
+
     val canUndo: Boolean get() = undo.isNotEmpty()
     val hasSelection: Boolean get() = stickers.selected != null
     val strokeCount: Int get() = finished.strokes.size
@@ -226,6 +237,7 @@ class NotebookView(context: Context) : FrameLayout(context) {
                     return
                 }
                 val id = activeId ?: return
+                if (penLike(ev, idx)) meter(ev.getPressure(idx))
                 predictor.record(ev)
                 val predicted = predictor.predict()
                 inProgress.addToStroke(ev, activePointer, id, predicted)
@@ -251,6 +263,15 @@ class NotebookView(context: Context) : FrameLayout(context) {
                 erasing = false
             }
         }
+    }
+
+    private fun meter(p: Float) {
+        penSeen = true
+        lastPressure = p
+        if (p < pressureMin) pressureMin = p
+        if (p > pressureMax) pressureMax = p
+        val now = System.currentTimeMillis()
+        if (now - lastMeterAt > 80) { lastMeterAt = now; notifyState() }
     }
 
     // ---------- the eraser ----------

@@ -13,8 +13,8 @@ android {
         applicationId = "com.guernseyhill.notebook"
         minSdk = 29
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1 pen test"
+        versionCode = 2
+        versionName = "0.2 pen test"
     }
 
     buildTypes {

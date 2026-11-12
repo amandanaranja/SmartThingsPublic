@@ -145,8 +145,25 @@ private fun TopBar(v: NotebookView?, t: Int) {
         TextButton(onClick = { v?.goTo(date.plusDays(1)) }) { Text("›", fontSize = 22.sp) }
         if (date != LocalDate.now()) TextButton(onClick = { v?.goTo(LocalDate.now()) }) { Text("Today") }
         Spacer(Modifier.weight(1f))
-        Text("pen test 0.1", fontSize = 11.sp, color = Muted, letterSpacing = 1.sp)
+        if (v != null && v.penSeen) PressureMeter(v)
+        Spacer(Modifier.width(10.dp))
+        Text("pen test 0.2", fontSize = 11.sp, color = Muted, letterSpacing = 1.sp)
         Spacer(Modifier.width(8.dp))
+    }
+}
+
+/** Shows what the S Pen is reporting, so a flat line means the pen, not the app. */
+@Composable
+private fun PressureMeter(v: NotebookView) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("pressure", fontSize = 10.sp, color = Muted, letterSpacing = 1.sp)
+        Spacer(Modifier.width(6.dp))
+        Box(Modifier.width(70.dp).height(8.dp).clip(RoundedCornerShape(4.dp)).background(Color(0xFFD6DCD3))) {
+            Box(Modifier.fillMaxWidth(v.lastPressure.coerceIn(0f, 1f)).height(8.dp).background(Accent))
+        }
+        Spacer(Modifier.width(6.dp))
+        val range = if (v.pressureMax >= v.pressureMin) "%.2f–%.2f".format(Locale.US, v.pressureMin, v.pressureMax) else ""
+        Text(range, fontSize = 10.sp, color = Muted)
     }
 }
 
@@ -164,6 +181,7 @@ private fun BottomBar(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 ToolChip("✒️ Pen", v.tool == Tool.PEN) { v.tool = Tool.PEN }
+                ToolChip("🖌 Brush", v.tool == Tool.BRUSH) { v.tool = Tool.BRUSH }
                 ToolChip("🖍️ Marker", v.tool == Tool.MARKER) { v.tool = Tool.MARKER }
                 ToolChip("🖊️ Highlight", v.tool == Tool.HIGHLIGHTER) { v.tool = Tool.HIGHLIGHTER }
                 ToolChip("◻ Eraser", v.tool == Tool.ERASER) { v.tool = Tool.ERASER }
