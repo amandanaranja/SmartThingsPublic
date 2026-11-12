@@ -1,0 +1,27 @@
+{
+  "greeting": "A clear, cold morning. Frost on the deck first thing, then sun by nine. Light jacket for the walk, warm coat if you are out before eight.",
+  "agenda": [
+    {"time": "8:30", "text": "Work starts", "sub": "leave at 7:55 · up by 6:55"},
+    {"time": "12:30", "text": "Call the vet about Pepper's refill"},
+    {"time": "5:30", "text": "Pick up the dry cleaning on the way home"}
+  ],
+  "weather": {"icon": "☀", "high": "46°", "low": "29°", "summary": "Sunny, breezy after lunch"},
+  "checklist": {
+    "Today": [
+      "The dogs' water before you leave",
+      "Return the Amazon box — UPS Store, window closes Friday",
+      "One shelf in the entryway table, thirty minutes",
+      "Text Nancy back about Saturday"
+    ],
+    "Tomorrow": [
+      "Hair wash morning — up by 6:30",
+      "Praxedes comes Friday: unlock the door, leave the garage open"
+    ],
+    "Later this week": [
+      "Pay Praxedes by the 30th",
+      "Order dog food — it has been about five weeks"
+    ]
+  },
+  "dinner": {"line": "Lemon orzo chickpea soup — a suggestion, nothing is on the calendar", "tomorrow": "Green Chef box arrives Tuesday"},
+  "chips": ["Garbage night", "Shopping — 4 things"]
+}

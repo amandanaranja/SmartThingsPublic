@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.Notebook" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#EFF1EC</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">#EFF1EC</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowBackground">#EFF1EC</item>
+    </style>
+</resources>

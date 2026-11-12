@@ -1,0 +1,8 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- a page corner with a pen stroke -->
+    <path android:fillColor="#FBFCFA" android:pathData="M30,22 h40 a6,6 0 0 1 6,6 v52 a6,6 0 0 1 -6,6 h-40 a6,6 0 0 1 -6,-6 v-52 a6,6 0 0 1 6,-6 z"/>
+    <path android:strokeColor="#D6DCD3" android:strokeWidth="1.5" android:fillColor="#00000000" android:pathData="M34,40 h38 M34,50 h38 M34,60 h38 M34,70 h26"/>
+    <path android:strokeColor="#2E6E5D" android:strokeWidth="4" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M36,66 C44,52 50,58 54,52 C58,46 64,56 72,44"/>
+</vector>
