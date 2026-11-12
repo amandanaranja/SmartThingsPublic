@@ -86,15 +86,17 @@ object StrokeCodec {
         val batch = MutableStrokeInputBatch()
         var i = 0
         while (i + 5 < m.pts.size) {
-            batch.addOrIgnore(
-                type = InputToolType.STYLUS,
-                x = m.pts[i],
-                y = m.pts[i + 1],
-                elapsedTimeMillis = m.pts[i + 5].toLong(),
-                pressure = m.pts[i + 2],
-                tiltRadians = m.pts[i + 3],
-                orientationRadians = m.pts[i + 4],
-            )
+            runCatching {
+                batch.add(
+                    type = InputToolType.STYLUS,
+                    x = m.pts[i],
+                    y = m.pts[i + 1],
+                    elapsedTimeMillis = m.pts[i + 5].toLong(),
+                    pressure = m.pts[i + 2],
+                    tiltRadians = m.pts[i + 3],
+                    orientationRadians = m.pts[i + 4],
+                )
+            }
             i += 6
         }
         return Stroke(Brushes.make(m.brush, m.color, m.size), batch)
