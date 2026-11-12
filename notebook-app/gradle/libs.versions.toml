@@ -9,6 +9,7 @@ composeBom = "2025.06.01"
 ink = "1.0.0-alpha05"
 motionPrediction = "1.0.0-beta05"
 serialization = "1.8.1"
+coroutines = "1.10.2"
 exifinterface = "1.4.1"
 
 [libraries]
@@ -28,6 +29,7 @@ androidx-ink-strokes = { group = "androidx.ink", name = "ink-strokes", version.r
 androidx-input-motionprediction = { group = "androidx.input", name = "input-motionprediction", version.ref = "motionPrediction" }
 androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

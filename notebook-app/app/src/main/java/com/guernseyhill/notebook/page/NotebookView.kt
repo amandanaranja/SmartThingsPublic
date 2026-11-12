@@ -18,6 +18,13 @@ import com.guernseyhill.notebook.model.PageStore
 import com.guernseyhill.notebook.model.SampleDay
 import com.guernseyhill.notebook.model.StickerModel
 import com.guernseyhill.notebook.model.StrokeModel
+import com.guernseyhill.notebook.model.DayContent
+import com.guernseyhill.notebook.sync.SyncManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
 import java.util.UUID
@@ -36,7 +43,13 @@ class NotebookView(context: Context) : FrameLayout(context) {
     var listener: Listener? = null
 
     val store = PageStore(context)
-    private val content = SampleDay.load(context)
+    val sync = SyncManager(context)
+    private val sample = SampleDay.load(context)
+    /** The day's information. The sample stands in until the repository is set up. */
+    private var content: DayContent? = sample
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private var pullJob: Job? = null
+    private val pushRunnable = Runnable { pushNow() }
     var date: LocalDate = LocalDate.now()
         private set
     var page: PageModel = PageModel(date.toString())
@@ -129,6 +142,7 @@ class NotebookView(context: Context) : FrameLayout(context) {
         dirty = false
         undo.clear(); pendingMeta.clear(); erasedNow.clear()
         activeId = null; activePointer = -1; erasing = false
+        content = if (sync.configured) sync.cachedContent(d) else sample
         contentLayer.page = page
         contentLayer.date = d
         contentLayer.content = content
@@ -139,6 +153,53 @@ class NotebookView(context: Context) : FrameLayout(context) {
             stickers.bind(page.stickers, store.photoDir)
         }
         notifyState()
+        pull()
+    }
+
+    /** Ask the repository for this day: fresh content, and a newer page if another device wrote one. */
+    fun pull() {
+        pullJob?.cancel()
+        if (!sync.configured) return
+        val d = date
+        val localPage = page
+        pullJob = scope.launch {
+            val got = runCatching { sync.pullDay(d, localPage, dirty, store.photoDir) }.getOrNull()
+            if (got != null && date == d) {
+                content = got.content
+                contentLayer.content = content
+                contentLayer.invalidate()
+                val remote = got.page
+                if (remote != null && !dirty) {
+                    page = remote
+                    store.save(page)
+                    contentLayer.page = page
+                    paper.set(page.paper, page.tint)
+                    undo.clear()
+                    if (width > 0 && height > 0) {
+                        loadInk()
+                        stickers.bind(page.stickers, store.photoDir)
+                    }
+                } else if (got.photosFetched && width > 0) {
+                    stickers.bind(page.stickers, store.photoDir)
+                }
+            }
+            notifyState()
+        }
+    }
+
+    private fun pushNow() {
+        if (!sync.configured) return
+        val p = page
+        scope.launch {
+            sync.pushDay(p, store.photoDir)
+            notifyState()
+        }
+    }
+
+    /** After the repository details change. */
+    fun reconnect() {
+        removeCallbacks(pushRunnable)
+        goTo(date)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -171,6 +232,10 @@ class NotebookView(context: Context) : FrameLayout(context) {
         if (width > 0) { page.pageW = width.toFloat(); page.pageH = height.toFloat() }
         store.save(page)
         dirty = false
+        if (sync.configured) {
+            removeCallbacks(pushRunnable)
+            postDelayed(pushRunnable, 2500)
+        }
     }
 
     fun flush() {

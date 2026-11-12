@@ -77,9 +77,11 @@ class ContentLayer(context: Context) : View(context) {
 
     private fun rect(f: FrameModel) = RectF(f.x * width, f.y * height, (f.x + f.w) * width, (f.y + f.h) * height)
 
+    private val empty = DayContent(greeting = "Nothing written for this day yet.")
+
     override fun onDraw(canvas: Canvas) {
         val p = page ?: return
-        val c = content ?: return
+        val c = content ?: empty
         checkHits.clear()
         for (f in frames()) {
             if (!f.visible && !layoutMode) continue

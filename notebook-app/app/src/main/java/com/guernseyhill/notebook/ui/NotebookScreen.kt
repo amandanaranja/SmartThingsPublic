@@ -29,6 +29,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Button
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import kotlinx.coroutines.launch
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -62,7 +67,7 @@ private val PaperBg = Color(0xFFEFF1EC)
 private val Ink = Color(0xFF19231F)
 private val Muted = Color(0xFF6D7B73)
 
-enum class Tray { NONE, STICKERS, PAPER, FONTS }
+enum class Tray { NONE, STICKERS, PAPER, FONTS, SYNC }
 
 @Composable
 fun NotebookTheme(content: @Composable () -> Unit) {
@@ -147,7 +152,7 @@ private fun TopBar(v: NotebookView?, t: Int) {
         Spacer(Modifier.weight(1f))
         if (v != null && v.penSeen) PressureMeter(v)
         Spacer(Modifier.width(10.dp))
-        Text("pen test 0.2", fontSize = 11.sp, color = Muted, letterSpacing = 1.sp)
+        Text(if (v != null && v.sync.configured) v.sync.status else "0.3", fontSize = 11.sp, color = Muted, letterSpacing = 1.sp)
         Spacer(Modifier.width(8.dp))
     }
 }
@@ -221,6 +226,7 @@ private fun BottomBar(
                 ToolChip("🖼 Photo", false) { onPickPhoto() }
                 ToolChip("📄 Paper", tray == Tray.PAPER) { onTray(Tray.PAPER) }
                 ToolChip("Aa Fonts", tray == Tray.FONTS) { onTray(Tray.FONTS) }
+                ToolChip("☁ Sync", tray == Tray.SYNC) { onTray(Tray.SYNC) }
                 Spacer(Modifier.width(6.dp))
                 ToolChip("▦ Boxes", v.layoutMode) { v.layoutMode = !v.layoutMode }
                 ToolChip("👆 Finger draws", v.fingerDraws) { v.fingerDraws = !v.fingerDraws }
@@ -288,12 +294,43 @@ private fun TrayPanel(tray: Tray, v: NotebookView, t: Int, modifier: Modifier, o
                     Text("THE DAY'S WORDS", fontSize = 10.sp, color = Muted, letterSpacing = 2.sp)
                     FontRow(v.page.contentFont) { v.setContentFont(it) }
                 }
+                Tray.SYNC -> SyncPanel(v)
                 Tray.NONE -> {}
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = onClose) { Text("Done") }
             }
         }
+    }
+}
+
+@Composable
+private fun SyncPanel(v: NotebookView) {
+    val scope = rememberCoroutineScope()
+    var owner by remember { mutableStateOf(v.sync.owner) }
+    var repo by remember { mutableStateOf(v.sync.repo) }
+    var branch by remember { mutableStateOf(v.sync.branch) }
+    var token by remember { mutableStateOf(v.sync.token) }
+    var status by remember { mutableStateOf(v.sync.status) }
+    Text("GITHUB REPOSITORY", fontSize = 10.sp, color = Muted, letterSpacing = 2.sp)
+    Spacer(Modifier.height(6.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedTextField(owner, { owner = it }, label = { Text("Owner") }, singleLine = true, modifier = Modifier.weight(1f))
+        OutlinedTextField(repo, { repo = it }, label = { Text("Repository") }, singleLine = true, modifier = Modifier.weight(1f))
+        OutlinedTextField(branch, { branch = it }, label = { Text("Branch") }, singleLine = true, modifier = Modifier.width(110.dp))
+    }
+    Spacer(Modifier.height(6.dp))
+    OutlinedTextField(
+        token, { token = it }, label = { Text("Fine-grained token (Contents: read and write)") }, singleLine = true,
+        visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Button(onClick = {
+            v.sync.owner = owner; v.sync.repo = repo; v.sync.branch = branch; v.sync.token = token
+            scope.launch { status = v.sync.test(); v.reconnect() }
+        }) { Text("Save and connect") }
+        Text(status, fontSize = 12.sp, color = Muted)
     }
 }
 

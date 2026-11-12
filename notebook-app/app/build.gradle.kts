@@ -13,8 +13,8 @@ android {
         applicationId = "com.guernseyhill.notebook"
         minSdk = 29
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.2 pen test"
+        versionCode = 3
+        versionName = "0.3"
     }
 
     buildTypes {
@@ -48,4 +48,5 @@ dependencies {
     implementation(libs.androidx.input.motionprediction)
     implementation(libs.androidx.exifinterface)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.android)
 }
