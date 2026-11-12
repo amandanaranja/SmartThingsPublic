@@ -17,6 +17,8 @@ import java.time.LocalDate
 @Serializable
 data class PageModel(
     val date: String,
+    /** Schema version. 2: all page coordinates are fractions of the page WIDTH, so y may exceed 1 on a tall page. */
+    var v: Int = 2,
     var paper: String = "dotted",
     var tint: String = "sage",
     var dateFont: String = "caveat",
@@ -40,7 +42,7 @@ data class StrokeModel(
     val pts: List<Float>,
 )
 
-/** A sticker, sticky note, photo or strip of washi tape. x,y are the center as a fraction of the page. */
+/** A sticker, sticky note, photo or strip of washi tape. x,y are the center as fractions of the page width. */
 @Serializable
 data class StickerModel(
     val id: String,
@@ -53,7 +55,10 @@ data class StickerModel(
     var tint: Int = 0,         // note or washi color index
 )
 
-/** A box the day's information flows into. All values are fractions of the page. */
+/**
+ * A box the day's information flows into, where she has changed it. Boxes she has not touched
+ * are laid out automatically each time and are not stored. All values are fractions of the page width.
+ */
 @Serializable
 data class FrameModel(
     val key: String,
@@ -62,19 +67,8 @@ data class FrameModel(
     var w: Float,
     var h: Float,
     var visible: Boolean = true,
+    var pinned: Boolean = true,
 )
-
-object Frames {
-    val keys = listOf("date", "weather", "greeting", "agenda", "checklist", "dinner")
-    fun defaults(): List<FrameModel> = listOf(
-        FrameModel("date", 0.05f, 0.025f, 0.55f, 0.115f),
-        FrameModel("weather", 0.63f, 0.025f, 0.32f, 0.115f),
-        FrameModel("greeting", 0.05f, 0.155f, 0.90f, 0.085f),
-        FrameModel("agenda", 0.05f, 0.26f, 0.42f, 0.30f),
-        FrameModel("checklist", 0.51f, 0.26f, 0.44f, 0.46f),
-        FrameModel("dinner", 0.05f, 0.58f, 0.42f, 0.14f),
-    )
-}
 
 class PageStore(context: Context) {
     private val dir = File(context.filesDir, "pages").apply { mkdirs() }
@@ -84,8 +78,21 @@ class PageStore(context: Context) {
     fun load(date: LocalDate): PageModel {
         val f = file(date)
         if (!f.exists()) return PageModel(date.toString())
-        return runCatching { json.decodeFromString<PageModel>(f.readText()) }
+        val page = runCatching { json.decodeFromString<PageModel>(f.readText()) }
             .getOrElse { PageModel(date.toString()) }
+        return migrate(page)
+    }
+
+    /** Pages from the pen test stored y as a fraction of the page height; bring them to width fractions. */
+    private fun migrate(p: PageModel): PageModel {
+        if (p.v >= 2) return p
+        if (p.pageW > 0f && p.pageH > 0f) {
+            val k = p.pageH / p.pageW
+            for (s in p.stickers) s.y *= k
+        }
+        p.frames.clear()
+        p.v = 2
+        return p
     }
 
     fun save(page: PageModel) {

@@ -260,7 +260,7 @@ class StickerView private constructor(context: Context, val model: StickerModel,
         pivotX = width / 2f
         pivotY = height / 2f
         translationX = model.x * parent.width - width / 2f
-        translationY = model.y * parent.height - height / 2f
+        translationY = model.y * parent.width - height / 2f
         rotation = model.rotation
         scaleX = model.scale
         scaleY = model.scale
@@ -270,7 +270,7 @@ class StickerView private constructor(context: Context, val model: StickerModel,
         val parent = parent as? View ?: return
         if (parent.width == 0 || parent.height == 0) return
         model.x = (translationX + width / 2f) / parent.width
-        model.y = (translationY + height / 2f) / parent.height
+        model.y = (translationY + height / 2f) / parent.width
         model.rotation = rotation
         model.scale = scaleX
     }
@@ -283,6 +283,7 @@ class StickerView private constructor(context: Context, val model: StickerModel,
     // ---------- gestures ----------
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        if (ev.actionMasked == MotionEvent.ACTION_DOWN) parent?.requestDisallowInterceptTouchEvent(true)
         if (ev.pointerCount >= 2) return true
         val h = dragHandle ?: return true
         if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
@@ -302,6 +303,7 @@ class StickerView private constructor(context: Context, val model: StickerModel,
     override fun onTouchEvent(ev: MotionEvent): Boolean {
         when (ev.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                parent?.requestDisallowInterceptTouchEvent(true)
                 layer.select(this)
                 mode = 1; lastX = ev.rawX; lastY = ev.rawY
             }

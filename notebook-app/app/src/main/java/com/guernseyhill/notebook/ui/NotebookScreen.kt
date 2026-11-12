@@ -152,7 +152,7 @@ private fun TopBar(v: NotebookView?, t: Int) {
         Spacer(Modifier.weight(1f))
         if (v != null && v.penSeen) PressureMeter(v)
         Spacer(Modifier.width(10.dp))
-        Text(if (v != null && v.sync.configured) v.sync.status else "0.3", fontSize = 11.sp, color = Muted, letterSpacing = 1.sp)
+        Text(if (v != null && v.sync.configured) v.sync.status else "0.4", fontSize = 11.sp, color = Muted, letterSpacing = 1.sp)
         Spacer(Modifier.width(8.dp))
     }
 }
@@ -229,6 +229,7 @@ private fun BottomBar(
                 ToolChip("☁ Sync", tray == Tray.SYNC) { onTray(Tray.SYNC) }
                 Spacer(Modifier.width(6.dp))
                 ToolChip("▦ Boxes", v.layoutMode) { v.layoutMode = !v.layoutMode }
+                if (v.layoutMode && v.hasCustomBoxes) TextButton(onClick = { v.resetBoxes() }) { Text("Reset boxes") }
                 ToolChip("👆 Finger draws", v.fingerDraws) { v.fingerDraws = !v.fingerDraws }
                 if (v.hasSelection) {
                     Spacer(Modifier.width(6.dp))

@@ -1,27 +1,73 @@
 {
+  "date": "sample",
   "greeting": "A clear, cold morning. Frost on the deck first thing, then sun by nine. Light jacket for the walk, warm coat if you are out before eight.",
   "agenda": [
-    {"time": "8:30", "text": "Work starts", "sub": "leave at 7:55 · up by 6:55"},
-    {"time": "12:30", "text": "Call the vet about Pepper's refill"},
-    {"time": "5:30", "text": "Pick up the dry cleaning on the way home"}
+    {"at": "8:30", "what": "Work from home — 8:30 to 4:30 (up by 7:30)"},
+    {"at": "12:30", "what": "Call the vet about the refill — leave at 12:15 if you go in person"}
   ],
-  "weather": {"icon": "☀", "high": "46°", "low": "29°", "summary": "Sunny, breezy after lunch"},
-  "checklist": {
-    "Today": [
-      "The dogs' water before you leave",
-      "Return the Amazon box — UPS Store, window closes Friday",
-      "One shelf in the entryway table, thirty minutes",
-      "Text Nancy back about Saturday"
-    ],
-    "Tomorrow": [
-      "Hair wash morning — up by 6:30",
-      "Praxedes comes Friday: unlock the door, leave the garage open"
-    ],
-    "Later this week": [
-      "Pay Praxedes by the 30th",
-      "Order dog food — it has been about five weeks"
-    ]
-  },
-  "dinner": {"line": "Lemon orzo chickpea soup — a suggestion, nothing is on the calendar", "tomorrow": "Green Chef box arrives Tuesday"},
-  "chips": ["Garbage night", "Shopping — 4 things"]
+  "alerts": [
+    {"text": "Garbage night", "tone": "warn"},
+    {"text": "Shopping — 4 things", "tone": "alert"},
+    {"text": "Rain clears by noon", "tone": "good"}
+  ],
+  "sections": [
+    {"kind": "prose", "title": "⛅ WEATHER", "groups": [{"label": null, "items": [
+      {"code": "1", "text": "Sunny and cold — high near 46, low 29. Breezy after lunch, so a hat if you walk the dogs late."}
+    ]}]},
+    {"kind": "schedule", "title": "YOUR DAY", "rows": [
+      {"label": "6 AM", "body": ""},
+      {"label": "7 AM", "body": "Up by 7:30 — no commute, so the dogs' water and coffee are the whole morning."},
+      {"label": "8:00", "body": "Work from home, 8:30 to 4:30."},
+      {"label": "9:00", "body": ""},
+      {"label": "10:00", "body": ""},
+      {"label": "11:00", "body": ""},
+      {"label": "12:00", "body": "Vet call at 12:30."},
+      {"label": "1:00", "body": ""},
+      {"label": "2:00", "body": ""},
+      {"label": "3:00", "body": ""},
+      {"label": "4:00", "body": "Work ends 4:30. A clear hour before dinner if you want the entryway shelf."},
+      {"label": "5:00", "body": ""},
+      {"label": "6 PM", "body": ""},
+      {"label": "7 PM", "body": ""},
+      {"label": "8 PM", "body": "Bins out — Chris usually does it; this is only a reminder."},
+      {"label": "9 PM", "body": ""}
+    ]},
+    {"kind": "list", "title": "❗ NEEDS ATTENTION", "groups": [{"label": null, "items": [
+      {"code": "3a", "k": "amazon-return", "text": "Return the Amazon box — UPS Store, the window closes Friday."}
+    ]}]},
+    {"kind": "list", "title": "⭐ TOP PRIORITIES", "groups": [{"label": null, "items": []}]},
+    {"kind": "list", "title": "📞 TO CALL / TO EMAIL", "groups": [{"label": null, "items": [
+      {"code": "5a", "k": "nancy-saturday", "text": "Text Nancy back about Saturday."}
+    ]}]},
+    {"kind": "list", "title": "☑ CHECKLIST", "groups": [
+      {"label": "Today", "items": [
+        {"code": "6a", "k": "dogs-water", "text": "The dogs' water before you leave the kitchen."},
+        {"code": "6b", "k": "entryway-shelf", "text": "One shelf of the entryway table — thirty minutes, no more."}
+      ]},
+      {"label": "Tomorrow", "items": [
+        {"code": "7a", "k": "hairwash", "text": "Hair wash morning — up by 6:30."}
+      ]},
+      {"label": "Later This Week", "items": [
+        {"code": "8a", "k": "praxedes-pay", "text": "Pay Praxedes by the last weekday of the month."}
+      ]}
+    ]},
+    {"kind": "list", "title": "Follow Up", "groups": [{"label": null, "items": []}]},
+    {"kind": "list", "title": "✅ COMPLETED YESTERDAY", "groups": [{"label": null, "items": [
+      {"code": "10a", "text": "Payroll part one."},
+      {"code": "10b", "text": "Booked the brow appointment."}
+    ]}]},
+    {"kind": "list", "title": "🍽 DINNER", "groups": [{"label": null, "items": [
+      {"code": "11a", "text": "Lemon orzo chickpea soup — a suggestion, nothing is on the calendar."},
+      {"code": "11b", "text": "Tomorrow — Green Chef box arrives Tuesday."}
+    ]}]},
+    {"kind": "list", "title": "📅 COMING UP", "groups": [{"label": null, "items": [
+      {"code": "12a", "text": "Fri — Praxedes cleans. Unlock the door and leave the garage open before work."},
+      {"code": "12b", "text": "Sun — Patterns report lands on the Day Book."}
+    ]}]},
+    {"kind": "list", "title": "💬 REPLIES TO YOUR NOTES", "groups": [{"label": null, "items": [
+      {"code": "13a", "text": "Read your note about the garden — filed for spring, nothing to do now."}
+    ]}]},
+    {"kind": "freeform", "title": "💬 QUESTIONS FOR ME", "code": "14"},
+    {"kind": "freeform", "title": "🖊 SCRIBBLES", "code": "15"}
+  ]
 }
